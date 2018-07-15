@@ -47,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
     public static final String ANONYMOUS = "anonymous";
     public static final int DEFAULT_MSG_LENGTH_LIMIT = 1000;
     public static final int RC_SIGN_IN = 1;
-    private static final int RC_PHOTO_PICKER = 101;
+    private static final int RC_PHOTO_PICKER = 2;
 
     private ListView mMessageListView;
     private MessageAdapter mMessageAdapter;
@@ -178,6 +178,7 @@ public class MainActivity extends AppCompatActivity {
                AuthUI.getInstance().signOut(this);
                return true;
 
+
            default:
                return super.onOptionsItemSelected(item);
        }
@@ -197,21 +198,20 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode==RC_SIGN_IN)
-        {
-            if(resultCode== RESULT_OK)
-            {
-                Toast.makeText(this,"Signed In ",Toast.LENGTH_LONG).show();
-            }
-            else if(resultCode == RESULT_CANCELED) {
-                Toast.makeText(this,"Cancelled",Toast.LENGTH_LONG).show();
+        if(requestCode == RC_SIGN_IN) {
+            if (resultCode == RESULT_OK) {
+                Toast.makeText(this, "Signed In ", Toast.LENGTH_LONG).show();
+            } else if (resultCode == RESULT_CANCELED) {
+                Toast.makeText(this, "Cancelled", Toast.LENGTH_LONG).show();
                 finish();
             }
-            else if (requestCode == RC_PHOTO_PICKER && resultCode == RESULT_OK && data != null && data.getData() != null)
+        }
+            if(requestCode == RC_PHOTO_PICKER && resultCode == RESULT_OK)
+           // else if (requestCode == RC_PHOTO_PICKER && resultCode == RESULT_OK && data != null && data.getData() != null)
             {
                 Uri selectedImageUri = data.getData();
-                final StorageReference photoRef = mChatPhotosStorageReference.child(selectedImageUri.getLastPathSegment());
-                UploadTask uploadTask = (UploadTask) photoRef.putFile(selectedImageUri).addOnSuccessListener(this, new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                StorageReference photoRef = mChatPhotosStorageReference.child(selectedImageUri.getLastPathSegment());
+                photoRef.putFile(selectedImageUri).addOnSuccessListener(this, new OnSuccessListener<UploadTask.TaskSnapshot>() {
                     @Override
                     public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                         Task<Uri> urlTask = taskSnapshot.getMetadata().getReference().getDownloadUrl();
@@ -248,7 +248,6 @@ public class MainActivity extends AppCompatActivity {
                 }); */
             }
         }
-    }
 
     @Override
     protected void onResume() {
